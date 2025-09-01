@@ -1,0 +1,3 @@
+MONGO_URI=<your connection>
+JWT_SECRET=the secret key
+PORT=5000
