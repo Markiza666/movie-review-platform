@@ -1,8 +1,11 @@
 {
+  "$schema": "http://json.schemastore.org/package",
   "name": "movie-review-platform",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "ts-node src/server.ts",
+    "dev": "nodemon --exec ts-node src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -30,7 +33,7 @@
     "type": "git",
     "url": "git+https://github.com/Markiza666/movie-review-platform.git"
   },
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/Markiza666/movie-review-platform/issues"
   },
