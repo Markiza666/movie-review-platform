@@ -1,12 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
-
-export interface IUser extends Document {
-  username: string;
-  email: string;
-  password?: string;
-  role: 'user' | 'admin';
-}
+import type { IUser } from '../interfaces';
 
 const UserSchema: Schema = new Schema({
   username: { type: String, required: true, unique: true },

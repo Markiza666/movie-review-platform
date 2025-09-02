@@ -1,12 +1,5 @@
-import mongoose, { Document, Schema } from 'mongoose';
-
-export interface IReview extends Document {
-  movieId: mongoose.Schema.Types.ObjectId;
-  userId: mongoose.Schema.Types.ObjectId;
-  rating: number;
-  comment?: string;
-  createdAt: Date;
-}
+import mongoose, { Schema } from 'mongoose';
+import type { IReview } from '../interfaces/index.js';
 
 const ReviewSchema: Schema = new Schema({
   movieId: { type: Schema.Types.ObjectId, ref: 'Movie', required: true },
