@@ -1,40 +1,44 @@
 import jwt from 'jsonwebtoken';
-import type { Request } from 'express';
-import type { Response } from 'express';
-import type { NextFunction } from 'express';
+import type { NextFunction, Response } from 'express';
 import User from '../models/User.js';
-import type { IUser } from '../models/User.js';
-
-interface AuthRequest extends Request {
-  user?: IUser;
-}
+import type { AuthRequest, IUser } from '../interfaces/index.js';
 
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  let token;
+  // 1. Check if the Authorization header exists and has the 'Bearer' prefix.
+  const token = req.headers.authorization?.split(' ')[1];
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      token = req.headers.authorization.split(' ')[1];
-      if (!process.env.JWT_SECRET) {
-        return res.status(500).json({ message: 'JWT_SECRET is not defined in environment variables' });
-      }
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password') as IUser;
-      next();
-    } catch (error) {
-      res.status(401).json({ message: 'Inte auktoriserad, token misslyckades' });
-    }
+  // 2. If no token exists, send an error response immediately.
+  if (!token) {
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
 
-  if (!token) {
-    res.status(401).json({ message: 'Inte auktoriserad, ingen token' });
+  // 3. If a token exists, proceed to verify it.
+  try {
+    // 4. Ensure the JWT secret is defined in environment variables.
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: 'Server configuration error: JWT_SECRET not defined' });
+    }
+
+    // 5. Verify the token using the secret.
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET);
+
+    // 6. Find the user based on the decoded token and attach it to the request.
+    req.user = await User.findById(decoded.id).select('-password') as IUser;
+    
+    // 7. Proceed to the next middleware or route handler.
+    next();
+  } catch (error) {
+    // If verification fails, the token is invalid or expired.
+    res.status(401).json({ message: 'Not authorized, token failed' });
   }
 };
 
 export const admin = (req: AuthRequest, res: Response, next: NextFunction) => {
+  // Check if the authenticated user has the 'admin' role.
   if (req.user && req.user.role === 'admin') {
     next();
   } else {
-    res.status(403).json({ message: 'Endast administratörer har tillgång' });
+    // If not, deny access.
+    res.status(403).json({ message: 'Access denied: Admin only' });
   }
 };
