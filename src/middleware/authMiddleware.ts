@@ -3,7 +3,7 @@ import type { NextFunction, Response } from 'express';
 import User from '../models/User.js';
 import type { AuthRequest, IUser } from '../interfaces/index.js';
 
-const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
   // Check if the Authorization header exists and has the 'Bearer' prefix.
   const token = req.headers.authorization?.split(' ')[1];
 
@@ -33,7 +33,7 @@ const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
   }
 };
 
-const admin = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const admin = (req: AuthRequest, res: Response, next: NextFunction) => {
   // Check if the authenticated user has the 'admin' role.
   if (req.user && req.user.role === 'admin') {
     next();
@@ -41,9 +41,4 @@ const admin = (req: AuthRequest, res: Response, next: NextFunction) => {
     // If not, deny access.
     res.status(403).json({ message: 'Access denied: Admin only' });
   }
-};
-
-export default { 
-  protect, 
-  admin 
 };

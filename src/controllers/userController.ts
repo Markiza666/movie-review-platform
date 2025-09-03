@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import generateToken from '../utils/generateToken.js';
 
 // Register a new user
-const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response) => {
   const { username, email, password, role } = req.body;
   const userExists = await User.findOne({ email });
 
@@ -30,7 +30,7 @@ const registerUser = async (req: Request, res: Response) => {
 };
 
 // Log in a user
-const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
@@ -48,7 +48,3 @@ const loginUser = async (req: Request, res: Response) => {
   }
 };
 
-export default { 
-  registerUser, 
-  loginUser 
-};
