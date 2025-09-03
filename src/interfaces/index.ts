@@ -1,32 +1,34 @@
 import type { Request } from 'express';
-import mongoose, { Document } from 'mongoose';
+import { ObjectId } from 'mongoose';
 
-// User Interface
-export interface IUser extends Document {
+// Interface for the User model
+export interface IUser {
+  _id: string;
   username: string;
   email: string;
   password?: string;
   role: 'user' | 'admin';
 }
 
-// Movie Interface
-export interface IMovie extends Document {
+// Interface for the Movie model
+export interface IMovie {
   title: string;
   director: string;
   releaseYear: number;
   genre: string;
 }
 
-// Review Interface
-export interface IReview extends Document {
-  movieId: mongoose.Schema.Types.ObjectId;
-  userId: mongoose.Schema.Types.ObjectId;
+// Interface for the Review model
+export interface IReview {
+  movieId: ObjectId;
+  userId: ObjectId;
   rating: number;
-  comment?: string;
-  createdAt: Date;
+  comment: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-// Custom Request Interface for Authentication Middleware
+// Custom Request type to include user data from middleware
 export interface AuthRequest extends Request {
-  user?: IUser;
+  user: IUser;
 }

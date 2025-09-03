@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
-import Movie from '../models/Movie.js';
-import type { AuthRequest } from '../interfaces/index.js';
+import Movie from '../models/Movie.ts';
+import type { AuthRequest } from '../interfaces/index.ts';
 
 // @desc Get all movies
 // @route GET /api/movies
