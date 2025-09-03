@@ -1,16 +1,19 @@
-import type{ Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import Movie from '../models/Movie.js';
-import Review from '../models/Review.js';
-import type{ AuthRequest } from '../interfaces/index.js';
+import type { AuthRequest } from '../interfaces/index.js';
 
-// Get all movies
-const getMovies = async (req: Request, res: Response) => {
+// @desc Get all movies
+// @route GET /api/movies
+// @access Public
+export const getMovies = async (req: Request, res: Response) => {
   const movies = await Movie.find({});
   res.json(movies);
 };
 
-// Get a single movie by ID
-const getMovieById = async (req: Request, res: Response) => {
+// @desc Get a single movie by ID
+// @route GET /api/movies/:id
+// @access Public
+export const getMovieById = async (req: Request, res: Response) => {
   const movie = await Movie.findById(req.params.id);
   if (movie) {
     res.json(movie);
@@ -19,21 +22,19 @@ const getMovieById = async (req: Request, res: Response) => {
   }
 };
 
-// Get all reviews for a specific movie
-const getMovieReviews = async (req: Request, res: Response) => {
-  const reviews = await Review.find({ movieId: req.params.id }).populate('userId', 'username');
-  res.json(reviews);
-};
-
-// Add a new movie (Admin only)
-const addMovie = async (req: AuthRequest, res: Response) => {
+// @desc Add a new movie
+// @route POST /api/movies
+// @access Private/Admin
+export const createMovie = async (req: AuthRequest, res: Response) => {
   const { title, director, releaseYear, genre } = req.body;
   const movie = await Movie.create({ title, director, releaseYear, genre });
   res.status(201).json(movie);
 };
 
-// Update a movie by ID (Admin only)
-const updateMovie = async (req: AuthRequest, res: Response) => {
+// @desc Update a movie by ID
+// @route PUT /api/movies/:id
+// @access Private/Admin
+export const updateMovie = async (req: AuthRequest, res: Response) => {
   const { title, director, releaseYear, genre } = req.body;
   const movie = await Movie.findById(req.params.id);
 
@@ -50,8 +51,10 @@ const updateMovie = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// Delete a movie by ID (Admin only)
-const deleteMovie = async (req: AuthRequest, res: Response) => {
+// @desc Delete a movie by ID
+// @route DELETE /api/movies/:id
+// @access Private/Admin
+export const deleteMovie = async (req: AuthRequest, res: Response) => {
   const movie = await Movie.findById(req.params.id);
 
   if (movie) {
@@ -62,8 +65,10 @@ const deleteMovie = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// Get all movies with their average rating
-const getMoviesWithRatings = async (req: Request, res: Response) => {
+// @desc Get all movies with their average rating
+// @route GET /api/movies/ratings
+// @access Public
+export const getMoviesWithRatings = async (req: Request, res: Response) => {
   const moviesWithRatings = await Movie.aggregate([
     {
       $lookup: {
@@ -98,14 +103,4 @@ const getMoviesWithRatings = async (req: Request, res: Response) => {
     },
   ]);
   res.json(moviesWithRatings);
-};
-
-export default {
-  getMovies,
-  getMovieById,
-  getMovieReviews,
-  addMovie,
-  updateMovie,
-  deleteMovie,
-  getMoviesWithRatings,
 };
