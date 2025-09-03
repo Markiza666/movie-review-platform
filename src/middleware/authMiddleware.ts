@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import type { NextFunction, Response } from 'express';
-import User from '../models/User.js';
-import type { AuthRequest, IUser } from '../interfaces/index.js';
+import User from '../models/User.ts';
+import type { AuthRequest, IUser } from '../interfaces/index.ts';
 
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
   // Check if the Authorization header exists and has the 'Bearer' prefix.

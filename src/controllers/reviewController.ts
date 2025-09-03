@@ -1,27 +1,39 @@
 import type{ Request, Response } from 'express';
-import Review from '../models/Review.js';
-import Movie from '../models/Movie.js';
-import type{ AuthRequest } from '../interfaces/index.js';
+import Review from '../models/Review.ts';
+import Movie from '../models/Movie.ts';
 
-// Get all reviews for a specific movie
-export const getMovieReviews = async (req: Request, res: Response) => {
+import type{ AuthRequest } from '../interfaces/index.ts';
+
+// @desc    Get all reviews for a movie
+// @route   GET /api/reviews/movies/:movieId
+// @access  Public
+// This function doesn't require AuthRequest as it's a public route.
+export const getMovieReviews = async (req: Request, res: Response): Promise<void> => {
     try {
         const reviews = await Review.find({ movieId: req.params.movieId }).populate('userId', 'username');
-        res.json(reviews);
+        if (!reviews) {
+            res.status(404).json({ message: 'No reviews found for this movie' });
+            return;
+        }
+        res.status(200).json(reviews);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
-};  
+};
 
-// Create a new review
+// @desc    Create a new review
+// @route   POST /api/reviews/:movieId
+// @access  Private
 export const createReview = async (req: AuthRequest, res: Response) => {
-    const { movieId, rating, comment } = req.body;
-    const userId = req.user?._id?.toString();
+    const { rating, comment } = req.body;
+    const { movieId } = req.params; 
+    const userId = req.user?._id; 
 
-    // Check if userId is available and a string
     if (!userId) {
-         return res.status(401).json({ message: 'Not authorized, user ID not found' });
+        return res.status(401).json({ message: 'Not authorized, user ID not found' });
     }
+
     try {
         const movie = await Movie.findById(movieId);
         if (!movie) {
@@ -39,42 +51,53 @@ export const createReview = async (req: AuthRequest, res: Response) => {
             rating,
             comment,
         });
+
         res.status(201).json(review);
     } catch (error) {
         res.status(400).json({ message: 'Invalid review data' });
     }
 };
 
-// Update an existing review
+// @desc    Update an existing review
+// @route   PUT /api/reviews/:reviewId
+// @access  Private
 export const updateReview = async (req: AuthRequest, res: Response) => {
     const { rating, comment } = req.body;
-    const review = await Review.findById(req.params.id);
+    const reviewId = req.params.reviewId;
+    const review = await Review.findById(reviewId);
 
     if (!review) {
         return res.status(404).json({ message: 'Review not found' });
     }
 
-    // Ensure the user is the owner of the review
-    if (req.user && review.userId.toString() === (req.user as { _id: string })._id.toString()) {
-        review.rating = rating || review.rating;
-        review.comment = comment || review.comment;
-        const updatedReview = await review.save();
-        res.json(updatedReview);
-    } else {
-        res.status(403).json({ message: 'Not authorized to update this review' });
+    // Check that the logged-in user is the owner of the review
+    if (review.userId.toString() !== req.user?._id?.toString()) { 
+        return res.status(403).json({ message: 'Not authorized to update this review' });
     }
+
+    review.rating = rating !== undefined ? rating : review.rating;
+    review.comment = comment !== undefined ? comment : review.comment;
+
+    const updatedReview = await review.save();
+    res.json(updatedReview);
 };
 
-// Delete a review
+// @desc    Delete a review
+// @route   DELETE /api/reviews/:reviewId
+// @access  Private
 export const deleteReview = async (req: AuthRequest, res: Response) => {
-    const review = await Review.findById(req.params.id);
+    const reviewId = req.params.reviewId; 
+    const review = await Review.findById(reviewId);
+    
     if (!review) {
-    return res.status(404).json({ message: 'Review not found' });
-}
+        return res.status(404).json({ message: 'Review not found' });
+    }
 
-// Ensure the user is the owner of the review
-if (req.user && review.userId.toString() === (req.user as { _id: string })._id.toString()) {
+    // Ensure the user is the owner of the review
+    if (review.userId.toString() !== req.user?._id?.toString()) { 
+        return res.status(403).json({ message: 'Not authorized to delete this review' });
+    }
+
     await review.deleteOne();
-    res.json({ message: 'Review removed' });  } else {
-    res.status(403).json({ message: 'Not authorized to delete this review' });  }
+    res.json({ message: 'Review removed' });
 };

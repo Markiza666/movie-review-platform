@@ -1,9 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import movieRoutes from './routes/movieRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import reviewRoutes from './routes/reviewRoutes.js';
+import movieRoutes from './routes/movieRoutes.ts';
+import userRoutes from './routes/userRoutes.ts';
+import reviewRoutes from './routes/reviewRoutes.ts';
+import genreRoutes from './routes/genreRoutes.ts';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ connectDB();
 app.use('/api/movies', movieRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/genres', genreRoutes);
 
 const PORT = process.env.PORT || 5000;
 
