@@ -1,28 +1,27 @@
-import { Router } from 'express';
+import express from 'express';
 import {
-    getMovieReviews,
-    createReview,
+    createMovieReview,
     updateReview,
     deleteReview,
+    getAllReviews,
+    getReviewById,
+    getMovieReviews
 } from '../controllers/reviewController.ts';
 import { protect } from '../middleware/authMiddleware.ts';
 
-const router = Router();
+const router = express.Router();
 
-// @desc    Get all reviews for a movie
-// @route   GET /api/reviews/movies/:movieId
-router.get('/movies/:movieId', getMovieReviews);    // This route is public, no 'protect' middleware needed
+// Public routes for reviews
+router.route('/').get(getAllReviews);
+router.route('/:id').get(getReviewById);
+router.route('/movie/:id').get(getMovieReviews);
 
-// @desc    Create a new review
-// @route   POST /api/reviews/:movieId
-router.post('/:movieId', protect, createReview);    // This route is private, hence 'protect' middleware is used
+// Private routes that require a user to be logged in
+router.route('/')
+    .post(protect as express.RequestHandler, createMovieReview as unknown as express.RequestHandler);
 
-// @desc    Update a review
-// @route   PUT /api/reviews/:reviewId
-router.put('/:reviewId', protect, updateReview);    // This route is private, the same as above
-
-// @desc    Delete a review
-// @route   DELETE /api/reviews/:reviewId
-router.delete('/:reviewId', protect, deleteReview); // This route is private, the same as above
-
+router.route('/:id')
+    .put(protect as express.RequestHandler, updateReview as unknown as express.RequestHandler)
+    .delete(protect as express.RequestHandler, deleteReview as unknown as express.RequestHandler);
+    
 export default router;

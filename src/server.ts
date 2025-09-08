@@ -1,38 +1,25 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
-import movieRoutes from './routes/movieRoutes.ts';
+import connectDB from './config/db.ts';
 import userRoutes from './routes/userRoutes.ts';
 import reviewRoutes from './routes/reviewRoutes.ts';
 import genreRoutes from './routes/genreRoutes.ts';
+import movieRoutes from './routes/movieRoutes.ts';
 
 dotenv.config();
 
-const app = express();
-app.use(express.json());
-
-const connectDB = async () => {
-  try {
-    const mongoUri = process.env.MONGO_URI;
-    if (!mongoUri) {
-      throw new Error('MONGO_URI is not defined in the .env file');
-    }
-    await mongoose.connect(mongoUri);
-    console.log('MongoDB connected successfully...');
-  } catch (error) {
-    console.error(`Fel: ${error}`);
-    process.exit(1);
-  }
-};
-
 connectDB();
 
-// Routes
-app.use('/api/movies', movieRoutes);
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 app.use('/api/users', userRoutes);
+app.use('/api/movies', movieRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/genres', genreRoutes);
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});

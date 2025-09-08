@@ -8,6 +8,8 @@ export interface IUser {
   email: string;
   password?: string;
   role: 'user' | 'admin';
+  isAdmin?: boolean;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 // Interface for the Movie model
@@ -16,6 +18,7 @@ export interface IMovie {
   director: string;
   releaseYear: number;
   genre: string;
+  user: IUser['_id'];
 }
 
 // Interface for the Review model
