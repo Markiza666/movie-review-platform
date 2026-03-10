@@ -1,13 +1,6 @@
 import express from 'express';
-import {
-    createMovieReview,
-    updateReview,
-    deleteReview,
-    getAllReviews,
-    getReviewById,
-    getMovieReviews
-} from '../controllers/reviewController.ts';
 import { protect } from '../middleware/authMiddleware.ts';
+import { createMovieReview, deleteReview, getAllReviews, getMovieReviews, getReviewById, updateReview } from '../controllers/reviewController.ts';
 
 const router = express.Router();
 

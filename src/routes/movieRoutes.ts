@@ -6,23 +6,21 @@ import {
     updateMovie,
     deleteMovie,
     getMoviesWithRatings,
-    getUniqueGenres,
-    getMoviesByGenre,
 } from '../controllers/movieController.ts';
+import { getMovieReviews } from '../controllers/reviewController.ts';
 import { protect, admin } from '../middleware/authMiddleware.ts';
 
 const router = express.Router();
 
-// Public routes for movies
-router.route('/ratings').get(getMoviesWithRatings);
-router.route('/genres').get(getUniqueGenres);
-router.route('/genre/:genre').get(getMoviesByGenre);
-router.route('/:id').get(getMovieById);
-router.route('/').get(getMovies);
+// Movie-specific routes
+router.get('/ratings', getMoviesWithRatings);
+router.get('/:id/reviews', getMovieReviews); // GET /api/movies/123/reviews
+router.get('/:id', getMovieById);
+router.get('/', getMovies);
 
-// Admin routes (requires logged-in user with admin privileges)
-router.post('/', protect as express.RequestHandler, admin as express.RequestHandler, createMovie as unknown as express.RequestHandler);
-router.put('/:id', protect as express.RequestHandler, admin as express.RequestHandler, updateMovie as unknown as express.RequestHandler);
-router.delete('/:id', protect as express.RequestHandler, admin as express.RequestHandler, deleteMovie as unknown as express.RequestHandler);
+// Protected routes
+router.post('/', protect as any, admin as any, createMovie as any);
+router.put('/:id', protect as any, admin as any, updateMovie as any);
+router.delete('/:id', protect as any, admin as any, deleteMovie as any);
 
 export default router;

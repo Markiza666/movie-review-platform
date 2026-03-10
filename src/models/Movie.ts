@@ -1,19 +1,6 @@
-import mongoose, { Schema, Model, Document } from 'mongoose';
-import type { IReview } from './Review.ts';
-import type { IUser } from './User.ts';
+import mongoose, { Schema } from 'mongoose';
+import { IMovie } from '../interfaces/index.ts';
 
-// Interfaces for our Mongoose documents
-export interface IMovie extends Document {
-    _id: mongoose.Types.ObjectId; // Corrected: Made _id a required property
-    title: string;
-    director: string;
-    releaseYear: number;
-    genre: string;
-    user: IUser['_id'];
-    reviews: IReview['_id'][];
-}
-
-// Mongoose Schema
 const MovieSchema: Schema = new Schema<IMovie>({
     title: {
         type: String,
@@ -25,10 +12,6 @@ const MovieSchema: Schema = new Schema<IMovie>({
     },
     releaseYear: {
         type: Number,
-        required: true,
-    },
-    genre: {
-        type: String,
         required: true,
     },
     user: {
@@ -47,5 +30,4 @@ const MovieSchema: Schema = new Schema<IMovie>({
 });
 
 const Movie = mongoose.model<IMovie>('Movie', MovieSchema);
-
 export default Movie;

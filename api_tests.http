@@ -1,0 +1,93 @@
+### Variables
+@baseUrl = http://localhost:5000/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODA1OGI1ZGE1ODdmZTkyNjc0YjI5MiIsImlhdCI6MTc3MDAxOTAyMiwiZXhwIjoxNzcyNjExMDIyfQ.H-D8V8mEvJ_bksZrLkz2aJFtMRcg9lpHsoTkpmzx6Tw
+
+### 1. Register a new user
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+    {
+        "username": "nika",
+        "email": "nika@student.se",
+        "password": "pastorsword123"
+    }
+
+### 2. Log in a user
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+    {
+        "email": "nika@student.se",
+        "password": "pastorsword123"
+    }
+
+### 3. Create movie(Token + Admin)
+POST {{baseUrl}}/movies
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+    {
+        "title": "Moln",
+        "director": "Nol",
+        "releaseYear": 2000,
+        "genre": "Triller"
+    }
+
+### 4. Get all movies
+GET {{baseUrl}}/movies
+
+### 5. Get movie by ID
+GET {{baseUrl}}/movies/6979d36ae56b8220080afeda
+
+### 6. Update movie (Admin Token)
+PUT {{baseUrl}}/movies/6979d36ae56b8220080afeda
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Inception!",
+    "director": "Molan",
+    "releaseYear": 2016,
+    "genre": "Horror"
+}
+
+### 7. Get reviews for a specific movie
+GET {{baseUrl}}/movies/6979d36ae56b8220080afeda/reviews
+
+### 8. Delete movie (Admin Token)
+DELETE {{baseUrl}}/movies/6979fda33cbb02c4f9dce8c7
+Authorization: Bearer {{token}}
+
+### 9. Post a review for a movie (Token)
+POST {{baseUrl}}/reviews
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+    {
+        "movieId": "6979d36ae56b8220080afeda",
+        "rating": 4,
+        "comment": "Riktigt spännande film, rekommenderas!"
+    }
+
+### 10. Get all reviews
+GET {{baseUrl}}/reviews
+
+### 11. Get review by ID
+GET {{baseUrl}}/reviews/698058b5da587fe92674b292
+
+### 12. Update review (Token)
+PUT {{baseUrl}}/reviews/698058b5da587fe92674b292
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+    {
+        "rating": 5,
+        "comment": "En ännu bättre film!"
+    }
+
+### 13. Delete review (Token)
+DELETE {{baseUrl}}/reviews/698058b5da587fe92674b292
+Authorization: Bearer {{token}}
+
+### 14.Get movies with ratings
+GET {{baseUrl}}/movies/ratings

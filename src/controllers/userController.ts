@@ -1,8 +1,7 @@
-import type{ Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import type { IUser } from '../models/User.ts'; 
-import User from '../models/User.ts';
-import { ObjectId } from 'mongoose';
+import { IUser } from '../interfaces/index.ts';   // Ensures clarity on the relationship between models and interfaces. Included for IntelliSense and potential refactoring.
+import User from '../models/user.ts';
 
 const generateToken = (id: string): string => {
     return jwt.sign({ id }, process.env.JWT_SECRET as string, {
@@ -10,12 +9,9 @@ const generateToken = (id: string): string => {
     });
 };
 
-// @desc    Register a new user
-// @route   POST /api/users/register
-// @access  Public
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { username, email, password, isAdmin } = req.body;
+        const { username, email, password, role } = req.body;
         const userExists = await User.findOne({ email });
 
         if (userExists) {
@@ -27,49 +23,38 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
             username,
             email,
             password,
-            isAdmin: isAdmin === true, // Ensure isAdmin is a boolean
+            role: role || 'user',
         });
 
-        if (user) {
-            const userId = user._id as ObjectId;
-            res.status(201).json({
-                _id: user._id,
-                username: user.username,
-                email: user.email,
-                isAdmin: user.isAdmin,
-                token: generateToken(userId.toString()),
-            });
-        } else {
-            res.status(400).json({ message: 'Invalid user data' });
-        }
+        res.status(201).json({
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            token: generateToken(user._id.toString()), 
+        });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-// @desc    Log in a user
-// @route   POST /api/users/login
-// @access  Public
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({ email }) as IUser;
+        const user = await User.findOne({ email });
 
-        if (user && (await user.comparePassword(password as string))) {
-            const userId = user._id as ObjectId;
+        if (user && (await user.comparePassword(password))) {
             res.json({
                 _id: user._id,
                 username: user.username,
                 email: user.email,
-                isAdmin: user.isAdmin,
-                token: generateToken(userId.toString()),
+                role: user.role,
+                token: generateToken(user._id.toString()),
             });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
         }
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Server error' });
     }
 };

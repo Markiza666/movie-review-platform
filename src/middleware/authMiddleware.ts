@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import asyncHandler from 'express-async-handler';
-import type { IUser } from '../models/User.ts';
-import User from '../models/User.ts';
+import User from '../models/user.ts';
 import type { Request, Response, NextFunction } from 'express';
+import * as asyncHandler from 'express-async-handler';
+import { IUser } from '../interfaces/index.ts';
 
 // Extend the Express Request type to include the user property
 // Note: 'user' is optional here to prevent type errors in the middleware itself
@@ -10,7 +10,7 @@ export interface AuthRequest extends Request {
     user?: IUser;
 }
 
-const protect = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+const protect = asyncHandler.default(async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     let token: string | undefined;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -42,11 +42,11 @@ const protect = asyncHandler(async (req: AuthRequest, res: Response, next: NextF
 });
 
 const admin = (req: AuthRequest, res: Response, next: NextFunction): void => {
-    if (req.user && req.user.isAdmin) {
+    if (req.user && req.user.role === 'admin') {
         next();
     } else {
-        res.status(401);
-        throw new Error('Not authorized as an admin');
+        res.status(403);
+        throw new Error('Not authorized as an admin. This action requires administrative privileges.');
     }
 };
 
