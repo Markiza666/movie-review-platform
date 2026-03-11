@@ -4,9 +4,6 @@ import Review from '../models/review.ts';
 import Movie from '../models/movie.ts';
 import type { AuthRequest } from '../middleware/authMiddleware.ts';
 
-// @desc    Create a new review
-// @route   POST /api/reviews
-// @access  Private
 export const createMovieReview = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const { rating, comment, movieId } = req.body;
@@ -40,12 +37,9 @@ export const createMovieReview = async (req: AuthRequest, res: Response): Promis
     }
 };
 
-// @desc    Get reviews for a specific movie
-// @route   GET /api/reviews/movie/:id
-// @access  Public
 export const getMovieReviews = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const reviews = await Review.find({ movie: req.params.id })
+        const reviews = await Review.find({ movieId: req.params.id })
             .populate('userId', 'username');
 
         if (!reviews) {
@@ -58,23 +52,17 @@ export const getMovieReviews = async (req: AuthRequest, res: Response): Promise<
     }
 };
 
-// @desc    Update a review
-// @route   PUT /api/reviews/:id
-// @access  Private
 export const updateReview = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const review = await Review.findById(req.params.id);
-
         if (!review) {
             res.status(404).json({ message: 'Review not found' });
             return;
         }
 
-        const isOwner = review.userId.toString() === req.user?._id.toString();
-        const isAdmin = req.user?.role === 'admin';
-
-        if (!isOwner && !isAdmin) {
-            res.status(403).json({ message: 'Not authorized to update this review' });
+        // OWNERSHIP CHECK: Compare the review's userId with the logged in user's ID
+        if (review.userId.toString() !== req.user?._id.toString()) {
+            res.status(403).json({ message: 'You can only update your own reviews.' });
             return;
         }
 
@@ -90,27 +78,21 @@ export const updateReview = async (req: AuthRequest, res: Response): Promise<voi
     }
 };
 
-// @desc    Delete a review
-// @route   DELETE /api/reviews/:id
-// @access  Private
 export const deleteReview = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const review = await Review.findById(req.params.id);
-
         if (!review) {
             res.status(404).json({ message: 'Review not found' });
             return;
         }
 
-        // Check if owner of the review or admin
-        const isOwner = review.userId.toString() === req.user?._id.toString();
-        const isAdmin = req.user?.role === 'admin';
-
-        if (!isOwner && !isAdmin) {
-            res.status(403).json({ message: 'Not authorized' });
+        // OWNERSHIP CHECK: Only the owner can delete
+        if (review.userId.toString() !== req.user?._id.toString()) {
+            res.status(403).json({ message: 'Not authorized to delete this review.' });
             return;
         }
 
+        // Remove the reference from the Movie's review array
         await Movie.findByIdAndUpdate(review.movieId, {
             $pull: { reviews: review._id }
         });
@@ -122,19 +104,18 @@ export const deleteReview = async (req: AuthRequest, res: Response): Promise<voi
     }
 };
 
-// @desc    Get all reviews (Admin or Debug)
-// @route   GET /api/reviews
 export const getAllReviews = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const reviews = await Review.find({}).populate('movie', 'title');
+        const reviews = await Review.find({})
+            .populate('movieId', 'title') // Hämtar filmens titel
+            .populate('userId', 'username');
+            
         res.status(200).json(reviews);
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-// @desc    Get single review by ID
-// @route   GET /api/reviews/:id
 export const getReviewById = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const review = await Review.findById(req.params.id)

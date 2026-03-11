@@ -1,14 +1,13 @@
 ### Variables
 @baseUrl = http://localhost:5000/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODA1OGI1ZGE1ODdmZTkyNjc0YjI5MiIsImlhdCI6MTc3MDAxOTAyMiwiZXhwIjoxNzcyNjExMDIyfQ.H-D8V8mEvJ_bksZrLkz2aJFtMRcg9lpHsoTkpmzx6Tw
-
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YjFiMTRjY2Q4YTBkODQ5MDJiOWUwNCIsImlhdCI6MTc3MzI1NTkxOCwiZXhwIjoxNzc1ODQ3OTE4fQ.0ymrBzY5MtpjA22VbtEhr-1pHnT4keJ0Q9gIW_o-Fqs
 ### 1. Register a new user
 POST {{baseUrl}}/users/register
 Content-Type: application/json
 
     {
-        "username": "nika",
-        "email": "nika@student.se",
+        "username": "Mike",
+        "email": "mike@student.se",
         "password": "pastorsword123"
     }
 
@@ -17,7 +16,7 @@ POST {{baseUrl}}/users/login
 Content-Type: application/json
 
     {
-        "email": "nika@student.se",
+        "email": "mike@student.se",
         "password": "pastorsword123"
     }
 
@@ -27,10 +26,10 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
     {
-        "title": "Moln",
-        "director": "Nol",
-        "releaseYear": 2000,
-        "genre": "Triller"
+        "title": "Home",
+        "director": "Home",
+        "releaseYear": 2018,
+        "genre": "Anime"
     }
 
 ### 4. Get all movies
@@ -45,7 +44,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "title": "Inception!",
+    "title": "Incr!",
     "director": "Molan",
     "releaseYear": 2016,
     "genre": "Horror"
@@ -55,7 +54,7 @@ Content-Type: application/json
 GET {{baseUrl}}/movies/6979d36ae56b8220080afeda/reviews
 
 ### 8. Delete movie (Admin Token)
-DELETE {{baseUrl}}/movies/6979fda33cbb02c4f9dce8c7
+DELETE {{baseUrl}}/movies/6979d36ae56b8220080afeda
 Authorization: Bearer {{token}}
 
 ### 9. Post a review for a movie (Token)
@@ -73,10 +72,10 @@ Content-Type: application/json
 GET {{baseUrl}}/reviews
 
 ### 11. Get review by ID
-GET {{baseUrl}}/reviews/698058b5da587fe92674b292
+GET {{baseUrl}}/reviews/69b1b87446a412a861f48103
 
 ### 12. Update review (Token)
-PUT {{baseUrl}}/reviews/698058b5da587fe92674b292
+PUT {{baseUrl}}/reviews/69b1b87446a412a861f48103
 Authorization: Bearer {{token}}
 Content-Type: application/json
 

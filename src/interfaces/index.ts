@@ -18,6 +18,7 @@ export interface IMovie extends Document {
     title: string;
     director: string;
     releaseYear: number;
+    genre: string;
     user: mongoose.Types.ObjectId | IUser; 
     reviews: mongoose.Types.ObjectId[] | IReview[];
     createdAt: Date;
@@ -27,10 +28,10 @@ export interface IMovie extends Document {
 // --- REVIEW INTERFACE ---
 export interface IReview extends Document {
     _id: mongoose.Types.ObjectId;
-    rating: number;
-    comment: string;
     userId: mongoose.Types.ObjectId | IUser;
     movieId: mongoose.Types.ObjectId | IMovie;
+    rating: number;
+    comment: string;
     createdAt: Date;
     updatedAt: Date;
 }

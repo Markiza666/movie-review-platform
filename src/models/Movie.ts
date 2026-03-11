@@ -14,10 +14,14 @@ const MovieSchema: Schema = new Schema<IMovie>({
         type: Number,
         required: true,
     },
+    genre: {
+        type: String,
+        required: true,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: false,
     },
     reviews: [
         {
