@@ -1,18 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
-import type { IMovie } from "./Movie.ts";
-import type { IUser } from "./User.ts";
+import mongoose, { Schema } from 'mongoose';
+import { IReview } from '../interfaces/index.ts';
 
-// Interfaces for our Mongoose documents
-export interface IReview extends Document {
-    _id: mongoose.Types.ObjectId;
-    rating: number;
-    comment: string;
-    user: IUser['_id'];
-    movie: IMovie['_id'];
-}
-
-// Mongoose Schema
-const ReviewSchema: Schema = new Schema({
+const ReviewSchema: Schema = new Schema<IReview>({
     rating: {
         type: Number,
         required: true,
@@ -23,20 +12,19 @@ const ReviewSchema: Schema = new Schema({
         type: String,
         required: true,
     },
-    user: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
-    movie: {
+    movieId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Movie',
         required: true,
     },
 }, {
-    timestamps: true,
+    timestamps: true,   // Automatically manage createdAt and updatedAt fields
 });
 
 const Review = mongoose.model<IReview>('Review', ReviewSchema);
-
 export default Review;

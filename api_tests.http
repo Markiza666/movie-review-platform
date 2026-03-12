@@ -1,0 +1,91 @@
+### Variables
+@baseUrl = http://localhost:5000/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5YjMxNTYwYzZlOGExOWYxZGQ3MjUyNSIsImlhdCI6MTc3MzM0NDEyOSwiZXhwIjoxNzc1OTM2MTI5fQ.SvjN9jcLyJLqQ0AvBM-A8kG9wJZXhuyBqZNcpT6NCGY
+### 1. Register a new user
+POST {{baseUrl}}/users/register
+Content-Type: application/json
+
+    {
+        "username": "Ike",
+        "email": "ike@student.se",
+        "password": "storst123"
+    }
+
+### 2. Log in a user
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+    {
+        "email": "Ike@student.se",
+        "password": "storst123"
+    }
+
+### 3. Create movie(Token + Admin)
+POST {{baseUrl}}/movies
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+    {
+        "title": "SSSSS",
+        "director": "Li",
+        "releaseYear": 2024,
+        "genre": "Komedy"
+    }
+
+### 4. Get all movies
+GET {{baseUrl}}/movies
+
+### 5. Get movie by ID
+GET {{baseUrl}}/movies/69b315c6c6e8a19f1dd7252a
+
+### 6. Update movie (Admin Token)
+PUT {{baseUrl}}/movies/69b315c6c6e8a19f1dd7252a
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Lu!",
+    "director": "Li",
+    "releaseYear": 2016,
+    "genre": "Horror"
+}
+
+### 7. Get reviews for a specific movie
+GET {{baseUrl}}/movies/69b16e114ff4565d40d7f182/reviews
+
+### 8. Delete movie (Admin Token)
+DELETE {{baseUrl}}/movies/69b315c6c6e8a19f1dd7252a
+Authorization: Bearer {{token}}
+
+### 9. Post a review for a movie (Token)
+POST {{baseUrl}}/reviews
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+    {
+        "movieId": "69b1b499c5bec9337179366a",
+        "rating": 4,
+        "comment": "Det var ok"
+    }
+
+### 10. Get all reviews
+GET {{baseUrl}}/reviews
+
+### 11. Get review by ID
+GET {{baseUrl}}/reviews/69b316f6c6e8a19f1dd72540
+### 12. Update review (Token)
+PUT {{baseUrl}}/reviews/69b316f6c6e8a19f1dd72540
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+    {
+        "rating": 5,
+        "comment": "Yes!"
+    }
+
+### 13. Delete review (Token)
+DELETE {{baseUrl}}/reviews/69b316f6c6e8a19f1dd72540
+Authorization: Bearer {{token}}
+
+### 14.Get movies with ratings
+GET {{baseUrl}}/movies/ratings

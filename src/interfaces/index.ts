@@ -1,37 +1,37 @@
-import type { Request } from 'express';
-import { ObjectId } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
-// Interface for the User model
-export interface IUser {
-  _id: string;
-  username: string;
-  email: string;
-  password?: string;
-  role: 'user' | 'admin';
-  isAdmin?: boolean;
-  comparePassword(candidatePassword: string): Promise<boolean>;
+// --- USER INTERFACE ---
+export interface IUser extends Document {
+    _id: mongoose.Types.ObjectId;
+    username: string;
+    email: string;
+    password?: string;
+    role: 'user' | 'admin';
+    createdAt: Date;
+    updatedAt: Date;
+    comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-// Interface for the Movie model
-export interface IMovie {
-  title: string;
-  director: string;
-  releaseYear: number;
-  genre: string;
-  user: IUser['_id'];
+// --- MOVIE INTERFACE ---
+export interface IMovie extends Document {
+    _id: mongoose.Types.ObjectId;
+    title: string;
+    director: string;
+    releaseYear: number;
+    genre: string;
+    user: mongoose.Types.ObjectId | IUser; 
+    reviews: mongoose.Types.ObjectId[] | IReview[];
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-// Interface for the Review model
-export interface IReview {
-  movieId: ObjectId;
-  userId: ObjectId;
-  rating: number;
-  comment: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-// Custom Request type to include user data from middleware
-export interface AuthRequest extends Request {
-  user: IUser;
+// --- REVIEW INTERFACE ---
+export interface IReview extends Document {
+    _id: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId | IUser;
+    movieId: mongoose.Types.ObjectId | IMovie;
+    rating: number;
+    comment: string;
+    createdAt: Date;
+    updatedAt: Date;
 }

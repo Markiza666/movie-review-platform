@@ -1,4 +1,5 @@
 import express from 'express';
+import { protect, admin } from '../middleware/authMiddleware.ts';
 import {
     createMovie,
     getMovies,
@@ -6,23 +7,33 @@ import {
     updateMovie,
     deleteMovie,
     getMoviesWithRatings,
-    getUniqueGenres,
-    getMoviesByGenre,
 } from '../controllers/movieController.ts';
-import { protect, admin } from '../middleware/authMiddleware.ts';
+import { getMovieReviews } from '../controllers/reviewController.ts';
 
 const router = express.Router();
 
-// Public routes for movies
-router.route('/ratings').get(getMoviesWithRatings);
-router.route('/genres').get(getUniqueGenres);
-router.route('/genre/:genre').get(getMoviesByGenre);
-router.route('/:id').get(getMovieById);
-router.route('/').get(getMovies);
+// Simple one-liners for public and specific access. 
+// We separate these to clearly show what data is available to everyone.
+// --- MOVIE-SPECIFIC ROTES ---
+router.get('/ratings', getMoviesWithRatings);
+router.get('/:id/reviews', getMovieReviews); // GET /api/movies/123/reviews
 
-// Admin routes (requires logged-in user with admin privileges)
-router.post('/', protect as express.RequestHandler, admin as express.RequestHandler, createMovie as unknown as express.RequestHandler);
-router.put('/:id', protect as express.RequestHandler, admin as express.RequestHandler, updateMovie as unknown as express.RequestHandler);
-router.delete('/:id', protect as express.RequestHandler, admin as express.RequestHandler, deleteMovie as unknown as express.RequestHandler);
+// --- PUBLIC ROUTES ---
+router.get('/', getMovies);
+router.get('/:id', getMovieById);
+
+// --- ADMIN ROUTES ---
+// We use router.route() to group multiple actions (POST, PUT, DELETE) 
+// targeted at the same path. This follows the DRY (Don't Repeat Yourself) 
+// principle and makes the administrative logic easier to manage.
+
+// Note: 'as any' is used here to bypass minor TypeScript compatibility issues 
+// between Express request handlers and our custom controller types.
+router.route('/')
+    .post(protect as any, admin as any, createMovie as any);
+
+router.route('/:id')
+    .put(protect as any, admin as any, updateMovie as any)
+    .delete(protect as any, admin as any, deleteMovie as any);
 
 export default router;
