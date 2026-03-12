@@ -107,7 +107,7 @@ export const deleteReview = async (req: AuthRequest, res: Response): Promise<voi
 export const getAllReviews = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const reviews = await Review.find({})
-            .populate('movieId', 'title') // Hämtar filmens titel
+            .populate('movieId', 'title')
             .populate('userId', 'username');
             
         res.status(200).json(reviews);

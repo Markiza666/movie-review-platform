@@ -98,7 +98,7 @@ export const getMovieById = async (req: Request, res: Response): Promise<void> =
 
 export const getMoviesWithRatings = async (req: Request, res: Response): Promise<void> => {
     try {
-        console.log("Starting aggregation..."); // Logga att vi startar
+        console.log("Starting aggregation...");
 
         const moviesWithRatings = await Movie.aggregate([
             {
@@ -129,15 +129,16 @@ export const getMoviesWithRatings = async (req: Request, res: Response): Promise
         console.log("Aggregation successful, found:", moviesWithRatings.length);
         res.status(200).json(moviesWithRatings);
     } catch (error: any) {
-        // DETTA ÄR VIKTIGT: Skriv ut hela felet i terminalen så vi ser vad MongoDB klagar på
+        // Log full error details to the terminal for server-side debugging
         console.error('--- AGGREGATION ERROR DETAILS ---');
         console.error(error.message);
         console.error(error);
         console.error('---------------------------------');
-        
+        +
+        // Return the error message in the response for easier client-side testing (temporary)
         res.status(500).json({ 
             message: 'Server error during rating aggregation.',
-            error: error.message // Skicka med felet till .http-filen tillfälligt för att se det där
+            error: error.message
         });
     }
 };
